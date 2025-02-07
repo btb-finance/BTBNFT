@@ -54,6 +54,11 @@ const config: HardhatUserConfig = {
         ],
     },
     networks: {
+        'op-sepolia': {
+            eid: EndpointId.OPTIMISM_SEPOLIA_V2_TESTNET,
+            url: process.env.RPC_URL_OP_SEPOLIA || 'https://sepolia.optimism.io',
+            accounts,
+        },
         'sepolia-testnet': {
             eid: EndpointId.SEPOLIA_V2_TESTNET,
             url: process.env.RPC_URL_SEPOLIA || 'https://rpc.sepolia.org/',
