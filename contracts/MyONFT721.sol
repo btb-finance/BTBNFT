@@ -34,11 +34,11 @@ contract MyONFT721 is ONFT721 {
         mintPrice = _initialPrice;
     }
 
-    function _baseURI() internal view virtual override returns (string memory) {
+    function getBaseURI() internal view returns (string memory) {
         return baseURI;
     }
 
-    function setBaseURI(string memory _newBaseURI) public onlyOwner {
+    function updateBaseURI(string calldata _newBaseURI) external onlyOwner {
         baseURI = _newBaseURI;
     }
 
@@ -47,9 +47,9 @@ contract MyONFT721 is ONFT721 {
     }
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        require(_exists(tokenId), "URI query for nonexistent token");
+        require(ownerOf(tokenId) != address(0), "URI query for nonexistent token");
 
-        string memory currentBaseURI = _baseURI();
+        string memory currentBaseURI = getBaseURI();
         return bytes(currentBaseURI).length > 0
             ? string(abi.encodePacked(currentBaseURI, tokenId.toString(), baseExtension))
             : "";
