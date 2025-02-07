@@ -8,13 +8,13 @@
   <a href="https://layerzero.network" style="color: #a77dff">Homepage</a> | <a href="https://docs.layerzero.network/" style="color: #a77dff">Docs</a> | <a href="https://layerzero.network/developers" style="color: #a77dff">Developers</a>
 </p>
 
-<h1 align="center">ONFT721 Example</h1>
+<h1 align="center">BTB NFT Project</h1>
 
 <p align="center">
   <a href="https://docs.layerzero.network/v2/developers/evm/onft721/quickstart" style="color: #a77dff">Quickstart</a> | <a href="https://docs.layerzero.network/contracts/oapp-configuration" style="color: #a77dff">Configuration</a> | <a href="https://docs.layerzero.network/contracts/options" style="color: #a77dff">Message Execution Options</a> | <a href="https://docs.layerzero.network/contracts/endpoint-addresses" style="color: #a77dff">Endpoint Addresses</a>
 </p>
 
-<p align="center">Template project for getting started with LayerZero's <code>ONFT721</code> contract development.</p>
+<p align="center">A LayerZero-powered NFT collection that enables cross-chain NFT transfers using the ONFT721 standard.</p>
 
 ### ONFT721Adapter additional setup:
 
@@ -25,6 +25,87 @@
       tokenAddress: '0x0',
   }
   ```
+
+## Deployed Contracts
+
+- **Network**: OP Sepolia (Optimism Testnet)
+- **Contract Address**: `0xA1C178304D40841703c454D43187E029dbf5173e`
+- **Contract Name**: MyONFT721
+- **Symbol**: ONFT
+- **Block Explorer**: [View on Etherscan](https://sepolia-optimism.etherscan.io/address/0xA1C178304D40841703c454D43187E029dbf5173e#code)
+
+## Features
+
+- Cross-chain NFT transfers using LayerZero
+- ERC721 standard compliance
+- Customizable base URI for NFT metadata
+- Configurable mint price in BTB tokens
+- Owner-only minting functions
+- Maximum supply cap of 10,000 NFTs
+
+## Development
+
+### Prerequisites
+
+- Node.js
+- pnpm (Package Manager)
+- Hardhat
+
+### Installation
+
+```bash
+# Install dependencies
+pnpm install
+```
+
+### Configuration
+
+1. Create a `.env` file based on `.env.example`
+2. Set your private key or mnemonic
+3. (Optional) Set RPC URLs for different networks
+
+### Available Commands
+
+```bash
+# Compile contracts
+pnpm hardhat compile
+
+# Run tests
+pnpm hardhat test
+
+# Deploy to OP Sepolia
+pnpm hardhat deploy --network op-sepolia
+
+# Verify contract
+pnpm hardhat verify --network op-sepolia <contract-address> <constructor-args>
+```
+
+## Contract Functions
+
+### For Users
+- `buyToken(uint256 tokenId)`: Buy an NFT using BTB tokens
+- `tokenURI(uint256 tokenId)`: Get the metadata URI for a specific token
+
+### For Owner
+- `mint(address to, uint256 tokenId)`: Mint a new NFT (owner only)
+- `safeMint(address to, uint256 tokenId)`: Safely mint a new NFT (owner only)
+- `updateBaseURI(string calldata _newBaseURI)`: Update the base URI for token metadata
+- `setBaseExtension(string memory _newBaseExtension)`: Update the file extension for token metadata
+
+## LayerZero Integration
+
+This project uses LayerZero's ONFT721 standard for cross-chain NFT transfers. The contract is deployed with the following LayerZero configuration:
+
+- **LayerZero Endpoint (OP Sepolia)**: `0x6edce65403992e310a62460808c4b910d972f10f`
+- **Main Chain ID**: 11155420 (OP Sepolia)
+
+## License
+
+UNLICENSED
+
+## Security
+
+This project is provided as-is. Please conduct your own security review before using any of the code in production.
 
 ## 1) Developing Contracts
 

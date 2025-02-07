@@ -9,6 +9,7 @@ import 'hardhat-deploy'
 import 'hardhat-contract-sizer'
 import '@nomiclabs/hardhat-ethers'
 import '@layerzerolabs/toolbox-hardhat'
+import '@nomiclabs/hardhat-etherscan'
 import { HardhatUserConfig, HttpNetworkAccountsUserConfig } from 'hardhat/types'
 
 import { EndpointId } from '@layerzerolabs/lz-definitions'
@@ -78,6 +79,21 @@ const config: HardhatUserConfig = {
             // Need this for testing because TestHelperOz5.sol is exceeding the compiled contract size limit
             allowUnlimitedContractSize: true,
         },
+    },
+    etherscan: {
+        apiKey: {
+            'op-sepolia': 'C6FUKZQJV3W2USCHYZT87HRP65D8Z7DPWX'
+        },
+        customChains: [
+            {
+                network: 'op-sepolia',
+                chainId: 11155420,
+                urls: {
+                    apiURL: 'https://api-sepolia-optimistic.etherscan.io/api',
+                    browserURL: 'https://sepolia-optimism.etherscan.io'
+                }
+            }
+        ]
     },
     namedAccounts: {
         deployer: {

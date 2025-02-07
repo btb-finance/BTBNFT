@@ -60,6 +60,9 @@ importers:
       '@nomiclabs/hardhat-ethers':
         specifier: ^2.2.3
         version: 2.2.3(ethers@5.7.2(bufferutil@4.0.9)(utf-8-validate@5.0.10))(hardhat@2.22.18(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@18.18.14)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10))
+      '@nomiclabs/hardhat-etherscan':
+        specifier: ^3.1.8
+        version: 3.1.8(hardhat@2.22.18(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@18.18.14)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10))
       '@openzeppelin/contracts':
         specifier: ^5.0.2
         version: 5.2.0
@@ -775,6 +778,12 @@ packages:
       ethers: ^5.7.2
       hardhat: ^2.0.0
 
+  '@nomiclabs/hardhat-etherscan@3.1.8':
+    resolution: {integrity: sha512-v5F6IzQhrsjHh6kQz4uNrym49brK9K5bYCq2zQZ729RYRaifI9hHbtmK+KkIVevfhut7huQFEQ77JLRMAzWYjQ==}
+    deprecated: The @nomiclabs/hardhat-etherscan package is deprecated, please use @nomicfoundation/hardhat-verify instead
+    peerDependencies:
+      hardhat: ^2.0.4
+
   '@openzeppelin/contracts-upgradeable@4.7.3':
     resolution: {integrity: sha512-+wuegAMaLcZnLCJIvrVUDzA9z/Wp93f0Dla/4jJvIhijRrPabjQbZe6fWiECLaJyfn5ci9fqf9vTw3xpQOad2A==}
 
@@ -1368,6 +1377,10 @@ packages:
 
   caseless@0.12.0:
     resolution: {integrity: sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==}
+
+  cbor@8.1.0:
+    resolution: {integrity: sha512-DwGjNW9omn6EwP70aXsn7FQJx5kO12tX0bZkaTjzdVFM6/7nhA4t0EENocKGx6D2Bch9PE2KzCUf5SceBdeijg==}
+    engines: {node: '>=12.19'}
 
   chai@4.5.0:
     resolution: {integrity: sha512-RITGBfijLkBddZvnn8jdqoTypxvqbOLYQkGGxXzeFjVHvudaPw0HNFD9x928/eUwYWd2dPCugVqspGALTZZQKw==}
@@ -2945,6 +2958,10 @@ packages:
 
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
+
+  nofilter@3.1.0:
+    resolution: {integrity: sha512-l2NNj07e9afPnhAhvgVrCD/oy2Ai1yfLpuo3EpiO1jFTsB4sFz6oIfAfSZyQzVpkZQ9xS8ZS5g1jCBgq4Hwo0g==}
+    engines: {node: '>=12.19'}
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -5089,6 +5106,22 @@ snapshots:
       ethers: 5.7.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       hardhat: 2.22.18(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@18.18.14)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)
 
+  '@nomiclabs/hardhat-etherscan@3.1.8(hardhat@2.22.18(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@18.18.14)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10))':
+    dependencies:
+      '@ethersproject/abi': 5.7.0
+      '@ethersproject/address': 5.7.0
+      cbor: 8.1.0
+      chalk: 2.4.2
+      debug: 4.4.0(supports-color@8.1.1)
+      fs-extra: 7.0.1
+      hardhat: 2.22.18(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@18.18.14)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)
+      lodash: 4.17.21
+      semver: 6.3.1
+      table: 6.9.0
+      undici: 5.28.5
+    transitivePeerDependencies:
+      - supports-color
+
   '@openzeppelin/contracts-upgradeable@4.7.3': {}
 
   '@openzeppelin/contracts-upgradeable@5.2.0(@openzeppelin/contracts@5.2.0)':
@@ -5790,6 +5823,10 @@ snapshots:
   caniuse-lite@1.0.30001698: {}
 
   caseless@0.12.0: {}
+
+  cbor@8.1.0:
+    dependencies:
+      nofilter: 3.1.0
 
   chai@4.5.0:
     dependencies:
@@ -7695,6 +7732,8 @@ snapshots:
   node-gyp-build@4.8.4: {}
 
   node-releases@2.0.19: {}
+
+  nofilter@3.1.0: {}
 
   normalize-path@3.0.0: {}
 
