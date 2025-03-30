@@ -1,0 +1,221 @@
+// SPDX-License-Identifier: MIT
+// Compatible with OpenZeppelin Contracts ^5.0.0
+pragma solidity ^0.8.22;
+
+import {ERC721} from "@openzeppelin/contracts@5.2.0/token/ERC721/ERC721.sol";
+import {ERC721Enumerable} from "@openzeppelin/contracts@5.2.0/token/ERC721/extensions/ERC721Enumerable.sol";
+import {Ownable} from "@openzeppelin/contracts@5.2.0/access/Ownable.sol";
+import {IERC20} from "@openzeppelin/contracts@5.2.0/token/ERC20/IERC20.sol";
+
+contract BTBFinanceNFT is ERC721, ERC721Enumerable, Ownable {
+    // Start token ID from 1 instead of 0
+    uint256 private _nextTokenId = 1;
+    
+    // Maximum supply of NFTs
+    uint256 public constant MAX_SUPPLY = 10000;
+    
+    // Base URI for metadata
+    string private _baseTokenURI;
+    
+    // BTB token contract
+    IERC20 public btbToken;
+    
+    // Price per NFT in BTB tokens
+    uint256 public pricePerNFT;
+    
+    // Flag to check if payment token is set
+    bool private _isPaymentTokenSet;
+    
+    constructor(address initialOwner)
+        ERC721("BTBFinance NFT", "BTBN")
+        Ownable(initialOwner)
+    {
+        // Initialize with empty base URI
+        _baseTokenURI = "";
+    }
+    
+    /**
+     * @dev Sets the BTB token address and price
+     */
+    function setPaymentToken(address _btbToken, uint256 _pricePerNFT) public onlyOwner {
+        btbToken = IERC20(_btbToken);
+        pricePerNFT = _pricePerNFT;
+        _isPaymentTokenSet = true;
+    }
+    
+    /**
+     * @dev Base URI for computing {tokenURI}. If set, the resulting URI for each
+     * token will be the concatenation of the `baseURI` and the `tokenId`.
+     */
+    function _baseURI() internal view override returns (string memory) {
+        return _baseTokenURI;
+    }
+    
+    /**
+     * @dev Sets the base URI for all token IDs. It is automatically
+     * added as a prefix to the token ID to obtain the tokenURI.
+     * If there is no base URI, the tokenURI is tokenID.toString().
+     */
+    function setBaseURI(string memory baseURI) public onlyOwner {
+        _baseTokenURI = baseURI;
+    }
+    
+    /**
+     * @dev Update the price per NFT
+     */
+    function setPricePerNFT(uint256 _newPrice) public onlyOwner {
+        pricePerNFT = _newPrice;
+    }
+    
+    /**
+     * @dev See {IERC721-tokenURI}.
+     */
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        
+        string memory baseURI = _baseURI();
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, _toString(tokenId))) : "";
+    }
+    
+    /**
+     * @dev Helper function to convert uint256 to string
+     */
+    function _toString(uint256 value) internal pure returns (string memory) {
+        // This is just a simple implementation of uint256 to string
+        if (value == 0) {
+            return "0";
+        }
+        
+        uint256 temp = value;
+        uint256 digits;
+        
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+        
+        bytes memory buffer = new bytes(digits);
+        while (value != 0) {
+            digits -= 1;
+            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+            value /= 10;
+        }
+        
+        return string(buffer);
+    }
+    
+    /**
+     * @dev Returns whether `tokenId` exists.
+     */
+    function _exists(uint256 tokenId) internal view returns (bool) {
+        return ownerOf(tokenId) != address(0);
+    }
+    
+    /**
+     * @dev Mint a single NFT (admin only)
+     */
+    function safeMint(address to) public onlyOwner returns (uint256) {
+        require(_nextTokenId <= MAX_SUPPLY, "Max supply reached");
+        
+        uint256 tokenId = _nextTokenId++;
+        _safeMint(to, tokenId);
+        return tokenId;
+    }
+    
+    /**
+     * @dev Batch mint multiple NFTs (admin only)
+     */
+    function batchMint(address to, uint256 amount) public onlyOwner returns (uint256[] memory) {
+        require(_nextTokenId + amount - 1 <= MAX_SUPPLY, "Would exceed max supply");
+        
+        uint256[] memory tokenIds = new uint256[](amount);
+        
+        for (uint256 i = 0; i < amount; i++) {
+            uint256 tokenId = _nextTokenId++;
+            _safeMint(to, tokenId);
+            tokenIds[i] = tokenId;
+        }
+        
+        return tokenIds;
+    }
+    
+    /**
+     * @dev Allow users to buy NFTs with BTB tokens
+     * User just needs to enter the amount of NFTs they want to buy
+     */
+    function buyNFT(uint256 amount) public returns (uint256[] memory) {
+        require(_isPaymentTokenSet, "Payment token not set");
+        require(amount > 0, "Must buy at least 1 NFT");
+        require(_nextTokenId + amount - 1 <= MAX_SUPPLY, "Would exceed max supply");
+        
+        uint256 totalPrice = pricePerNFT * amount;
+        
+        // Transfer BTB tokens from buyer to contract
+        require(btbToken.transferFrom(msg.sender, address(this), totalPrice), "BTB token transfer failed");
+        
+        // Mint NFTs to buyer
+        uint256[] memory tokenIds = new uint256[](amount);
+        
+        for (uint256 i = 0; i < amount; i++) {
+            uint256 tokenId = _nextTokenId++;
+            _safeMint(msg.sender, tokenId);
+            tokenIds[i] = tokenId;
+        }
+        
+        return tokenIds;
+    }
+    
+    /**
+     * @dev Withdraw BTB tokens from contract (admin only)
+     */
+    function withdrawTokens(address to, uint256 amount) public onlyOwner {
+        require(_isPaymentTokenSet, "Payment token not set");
+        require(btbToken.transfer(to, amount), "Token transfer failed");
+    }
+    
+    /**
+     * @dev Get current price in BTB tokens
+     */
+    function getPrice(uint256 amount) public view returns (uint256) {
+        return pricePerNFT * amount;
+    }
+    
+    /**
+     * @dev Get total minted NFTs
+     */
+    function totalMinted() public view returns (uint256) {
+        return _nextTokenId - 1;
+    }
+    
+    /**
+     * @dev Get remaining NFTs that can be minted
+     */
+    function remainingSupply() public view returns (uint256) {
+        return MAX_SUPPLY - (_nextTokenId - 1);
+    }
+    
+    // The following functions are overrides required by Solidity.
+    function _update(address to, uint256 tokenId, address auth)
+        internal
+        override(ERC721, ERC721Enumerable)
+        returns (address)
+    {
+        return super._update(to, tokenId, auth);
+    }
+    
+    function _increaseBalance(address account, uint128 value)
+        internal
+        override(ERC721, ERC721Enumerable)
+    {
+        super._increaseBalance(account, value);
+    }
+    
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721Enumerable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+}
