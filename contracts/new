@@ -7,8 +7,9 @@ import {ERC721Enumerable} from "@openzeppelin/contracts@5.2.0/token/ERC721/exten
 import {Ownable} from "@openzeppelin/contracts@5.2.0/access/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts@5.2.0/token/ERC20/IERC20.sol";
 import {ERC2981} from "@openzeppelin/contracts@5.2.0/token/common/ERC2981.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts@5.2.0/utils/ReentrancyGuard.sol";
 
-contract BTBFinanceNFT is ERC721, ERC721Enumerable, ERC2981, Ownable {
+contract BTBFinanceNFT is ERC721, ERC721Enumerable, ERC2981, Ownable, ReentrancyGuard {
     // Start token ID from 1 instead of 0
     uint256 private _nextTokenId = 1;
     
@@ -173,7 +174,7 @@ contract BTBFinanceNFT is ERC721, ERC721Enumerable, ERC2981, Ownable {
      * @dev Allow users to buy NFTs with BTB tokens
      * User just needs to enter the amount of NFTs they want to buy
      */
-    function buyNFT(uint256 amount) public returns (uint256[] memory) {
+    function buyNFT(uint256 amount) public nonReentrant returns (uint256[] memory) {
         require(_isPaymentTokenSet, "Payment token not set");
         require(amount > 0, "Must buy at least 1 NFT");
         require(_nextTokenId + amount - 1 <= MAX_SUPPLY, "Would exceed max supply");
@@ -198,7 +199,7 @@ contract BTBFinanceNFT is ERC721, ERC721Enumerable, ERC2981, Ownable {
     /**
      * @dev Withdraw BTB tokens from contract (admin only)
      */
-    function withdrawTokens(address to, uint256 amount) public onlyOwner {
+    function withdrawTokens(address to, uint256 amount) public onlyOwner nonReentrant {
         require(_isPaymentTokenSet, "Payment token not set");
         require(btbToken.transfer(to, amount), "Token transfer failed");
     }
