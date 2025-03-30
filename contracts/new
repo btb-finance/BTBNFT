@@ -6,8 +6,9 @@ import {ERC721} from "@openzeppelin/contracts@5.2.0/token/ERC721/ERC721.sol";
 import {ERC721Enumerable} from "@openzeppelin/contracts@5.2.0/token/ERC721/extensions/ERC721Enumerable.sol";
 import {Ownable} from "@openzeppelin/contracts@5.2.0/access/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts@5.2.0/token/ERC20/IERC20.sol";
+import {ERC2981} from "@openzeppelin/contracts@5.2.0/token/common/ERC2981.sol";
 
-contract BTBFinanceNFT is ERC721, ERC721Enumerable, Ownable {
+contract BTBFinanceNFT is ERC721, ERC721Enumerable, ERC2981, Ownable {
     // Start token ID from 1 instead of 0
     uint256 private _nextTokenId = 1;
     
@@ -27,11 +28,14 @@ contract BTBFinanceNFT is ERC721, ERC721Enumerable, Ownable {
     bool private _isPaymentTokenSet;
     
     constructor(address initialOwner)
-        ERC721("BTBFinance NFT", "BTBN")
+        ERC721("BTB Finance", "BTBN")
         Ownable(initialOwner)
     {
         // Initialize with empty base URI
         _baseTokenURI = "";
+        
+        // Set default royalty to 5% to the contract creator
+        _setDefaultRoyalty(initialOwner, 500); // 500 = 5%
     }
     
     /**
@@ -41,6 +45,32 @@ contract BTBFinanceNFT is ERC721, ERC721Enumerable, Ownable {
         btbToken = IERC20(_btbToken);
         pricePerNFT = _pricePerNFT;
         _isPaymentTokenSet = true;
+    }
+    
+    /**
+     * @dev Updates the royalty information for the collection
+     * @param receiver Address that should receive royalties
+     * @param feeNumerator Fee to be paid (in basis points, so 100 = 1%)
+     */
+    function setDefaultRoyalty(address receiver, uint96 feeNumerator) public onlyOwner {
+        _setDefaultRoyalty(receiver, feeNumerator);
+    }
+    
+    /**
+     * @dev Removes default royalty information
+     */
+    function deleteDefaultRoyalty() public onlyOwner {
+        _deleteDefaultRoyalty();
+    }
+    
+    /**
+     * @dev Sets token-specific royalty information
+     * @param tokenId The token ID to set royalty for
+     * @param receiver Address that should receive royalties
+     * @param feeNumerator Fee to be paid (in basis points, so 100 = 1%)
+     */
+    function setTokenRoyalty(uint256 tokenId, address receiver, uint96 feeNumerator) public onlyOwner {
+        _setTokenRoyalty(tokenId, receiver, feeNumerator);
     }
     
     /**
@@ -213,7 +243,7 @@ contract BTBFinanceNFT is ERC721, ERC721Enumerable, Ownable {
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC721, ERC721Enumerable)
+        override(ERC721, ERC721Enumerable, ERC2981)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
